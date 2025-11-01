@@ -2,6 +2,13 @@
   "name": "authentication",
   "version": "0.1.0",
   "private": true,
+  "description": "",
+  "author": "coderxyz14",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zyraa-com/Authentication.git"
+  },
+  "homepage": "",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
