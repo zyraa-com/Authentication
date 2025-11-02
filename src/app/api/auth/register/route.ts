@@ -1,11 +1,16 @@
 import { NextRequest } from "next/server";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { connectToDatabase } from "@/lib/db";
 import { SuccessResponse, ErrorResponse } from "@/lib/apiResponse";
 import { Plan, Provider } from "@/lib/types";
 import { registerSchema, RegisterInput } from "@/lib/validations";
 import UserModel from "@/modals/User";
 import { ZodError } from "zod";
+import {
+  generateVerificationToken,
+  getVerificationTokenExpiry,
+} from "@/lib/tokens";
+import { sendVerificationEmail } from "@/lib/email";
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,12 +28,16 @@ export async function POST(request: NextRequest) {
 
     const saltRounds = 12;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
+    const verificationToken = generateVerificationToken();
+    const verificationTokenExpires = getVerificationTokenExpiry();
 
     const newUser = new UserModel({
       name: name,
       email: email,
       password: hashedPassword,
       emailVerified: false,
+      verificationToken,
+      verificationTokenExpires,
       providers: [
         {
           provider: Provider.CREDENTIALS,
@@ -44,6 +53,12 @@ export async function POST(request: NextRequest) {
       },
     });
     const savedUser = await newUser.save();
+
+    try {
+      await sendVerificationEmail(email, name, verificationToken);
+    } catch (emailError) {
+      console.error("Failed to send verification email:", emailError);
+    }
     const userResponse = {
       id: savedUser._id,
       name: savedUser.name,
@@ -57,7 +72,8 @@ export async function POST(request: NextRequest) {
 
     return SuccessResponse(
       {
-        message: "User registered successfully",
+        message:
+          "User registered successfully. Please check your email to verify your account.",
         user: userResponse,
       },
       201

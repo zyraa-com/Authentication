@@ -6,6 +6,8 @@ export interface User extends Document {
   email: string;
   password?: string;
   emailVerified: boolean;
+  verificationToken?: string;
+  verificationTokenExpires?: Date;
   providers: {
     provider: Provider;
     providerAccountId: string;
@@ -35,6 +37,8 @@ const userSchema = new Schema<User>(
     password: String,
     providers: [providerSchema],
     emailVerified: { type: Boolean, default: false },
+    verificationToken: String,
+    verificationTokenExpires: Date,
     isPremium: { type: Boolean, default: false },
     plan: { type: String, enum: Object.values(Plan), default: Plan.FREE },
     trialUsed: { type: Boolean, default: false },
