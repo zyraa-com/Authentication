@@ -195,22 +195,20 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
+
+    async redirect({ url, baseUrl }) {
+      if (url.startsWith(baseUrl)) {
+        return `${baseUrl}/auth/redirect`;
+      }
+      return baseUrl;
+    },
   },
 
   pages: {
-    signIn: "/auth/signin",
+    signIn: "/login",
     error: "/auth/error",
   },
 
-  events: {
-    async signIn({ user, account, isNewUser }) {
-      if (isNewUser) {
-        console.log(
-          `New user signed up: ${user.email} via ${account?.provider}`
-        );
-      }
-    },
-  },
   secret: process.env.NEXTAUTH_SECRET,
   debug: process.env.NODE_ENV === "development",
 };
