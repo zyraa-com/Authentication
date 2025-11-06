@@ -8,6 +8,7 @@ import {
   getVerificationTokenExpiry,
 } from "@/lib/tokens";
 import { sendVerificationEmail } from "@/lib/email";
+import { logger } from "@/lib/logger";
 
 const resendSchema = z.object({
   email: z.string().email("Please provide a valid email address").toLowerCase(),
@@ -22,10 +23,15 @@ export async function POST(request: NextRequest) {
 
     const user = await UserModel.findOne({ email });
 
-    if (!user) return ErrorResponse("User not found", 404);
+    if (!user) {
+      logger.warn("resend-verification", `User not found: ${email}`);
+      return ErrorResponse("User not found", 404);
+    }
 
-    if (user.emailVerified)
+    if (user.emailVerified) {
+      logger.warn("resend-verification", `Email already verified: ${email}`);
       return ErrorResponse("Email is already verified", 400);
+    }
 
     const verificationToken = generateVerificationToken();
     const verificationTokenExpires = getVerificationTokenExpiry();
@@ -36,8 +42,16 @@ export async function POST(request: NextRequest) {
 
     try {
       await sendVerificationEmail(email, user.name, verificationToken);
+      logger.info(
+        "resend-verification",
+        `Verification email sent successfully to: ${email}`
+      );
     } catch (emailError) {
-      console.error("Failed to send verification email:", emailError);
+      logger.error(
+        "resend-verification",
+        `Failed to send verification email to: ${email}`,
+        emailError
+      );
       return ErrorResponse("Failed to send verification email", 500);
     }
 
@@ -45,12 +59,15 @@ export async function POST(request: NextRequest) {
       message: "Verification email sent successfully. Please check your inbox.",
     });
   } catch (error) {
-    console.error("Resend verification error:", error);
-
     if (error instanceof z.ZodError) {
+      logger.warn(
+        "resend-verification",
+        `Validation error: ${error.issues[0].message}`
+      );
       return ErrorResponse(error.issues[0].message, 400);
     }
 
+    logger.error("resend-verification", "Resend verification failed", error);
     return ErrorResponse("Internal server error", 500);
   }
 }

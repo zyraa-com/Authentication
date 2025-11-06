@@ -7,6 +7,7 @@ import {
   getVerificationTokenExpiry,
 } from "@/lib/tokens";
 import { sendVerificationEmail } from "@/lib/email";
+import { logger } from "@/lib/logger";
 
 export async function POST(
   request: NextRequest,
@@ -16,15 +17,25 @@ export async function POST(
     await connectToDatabase();
     const { token } = await params;
 
-    if (!token) return ErrorResponse("Verification token is required", 400);
+    if (!token) {
+      logger.warn("verify-email", "Verification attempt without token");
+      return ErrorResponse("Verification token is required", 400);
+    }
 
     const user = await UserModel.findOne({ verificationToken: token });
 
-    if (!user)
+    if (!user) {
+      logger.warn(
+        "verify-email",
+        `Invalid verification token: ${token.substring(0, 10)}...`
+      );
       return ErrorResponse("Invalid or expired verification token", 400);
+    }
 
-    if (user.emailVerified)
+    if (user.emailVerified) {
+      logger.warn("verify-email", `Email already verified: ${user.email}`);
       return ErrorResponse("Email is already verified", 400);
+    }
 
     if (
       user.verificationTokenExpires &&
@@ -39,12 +50,20 @@ export async function POST(
 
       try {
         await sendVerificationEmail(user.email, user.name, newToken);
+        logger.info(
+          "verify-email",
+          `New verification email sent to: ${user.email}`
+        );
         return ErrorResponse(
           "Token expired. A new verification email has been sent to your inbox.",
           400
         );
       } catch (emailError) {
-        console.error("Failed to send new verification email:", emailError);
+        logger.error(
+          "verify-email",
+          `Failed to send new verification email to: ${user.email}`,
+          emailError
+        );
         return ErrorResponse(
           "Token expired. Please request a new verification email.",
           400
@@ -57,12 +76,13 @@ export async function POST(
     user.verificationTokenExpires = undefined;
     await user.save();
 
+    logger.info("verify-email", `Email verified successfully: ${user.email}`);
     return SuccessResponse({
       message: "Email verified successfully",
       email: user.email,
     });
   } catch (error) {
-    console.error("Verification error:", error);
+    logger.error("verify-email", "Email verification failed", error);
     return ErrorResponse("Internal server error", 500);
   }
 }

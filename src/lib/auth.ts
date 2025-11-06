@@ -7,6 +7,7 @@ import { connectToDatabase } from "@/lib/db";
 import { Plan, Provider } from "@/lib/types";
 import UserModel from "@/modals/User";
 import mongoose from "mongoose";
+import { logger } from "@/lib/logger";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -41,6 +42,7 @@ export const authOptions: NextAuthOptions = {
           );
           if (!isValidPassword) return null;
 
+          logger.info("authorize", `Login successful: ${credentials.email}`);
           return {
             id: (user._id as mongoose.Types.ObjectId).toString(),
             email: user.email,
@@ -52,7 +54,7 @@ export const authOptions: NextAuthOptions = {
             usage: user.usage,
           };
         } catch (error) {
-          console.error("Auth error:", error);
+          logger.error("authorize", "Login error", error);
           return null;
         }
       },
@@ -96,6 +98,10 @@ export const authOptions: NextAuthOptions = {
                 providerAccountId: account.providerAccountId!,
               });
               await existingUser.save();
+              logger.info(
+                "signIn",
+                `Added ${account.provider} provider to existing user: ${user.email}`
+              );
             }
 
             if (
@@ -107,6 +113,10 @@ export const authOptions: NextAuthOptions = {
               await existingUser.save();
             }
 
+            logger.info(
+              "signIn",
+              `OAuth sign in successful for existing user: ${user.email}`
+            );
             return true;
           }
 
@@ -138,12 +148,16 @@ export const authOptions: NextAuthOptions = {
           });
 
           await newUser.save();
+          logger.info(
+            "signIn",
+            `New user created via ${account.provider}: ${user.email}`
+          );
           return true;
         }
 
         return true;
       } catch (error) {
-        console.error("SignIn error:", error);
+        logger.error("signIn", "OAuth sign in error", error);
         return false;
       }
     },

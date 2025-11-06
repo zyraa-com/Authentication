@@ -11,6 +11,7 @@ import {
   getVerificationTokenExpiry,
 } from "@/lib/tokens";
 import { sendVerificationEmail } from "@/lib/email";
+import { logger } from "@/lib/logger";
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,8 +24,13 @@ export async function POST(request: NextRequest) {
     const existingUser = await UserModel.findOne({
       email: email,
     });
-    if (existingUser)
+    if (existingUser) {
+      logger.warn(
+        "register",
+        `Registration failed - email already exists: ${email}`
+      );
       return ErrorResponse("User with this email already exists", 409);
+    }
 
     const saltRounds = 12;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -53,11 +59,17 @@ export async function POST(request: NextRequest) {
       },
     });
     const savedUser = await newUser.save();
+    logger.info("register", `User created successfully: ${email}`);
 
     try {
       await sendVerificationEmail(email, name, verificationToken);
+      logger.info("register", `Verification email sent to: ${email}`);
     } catch (emailError) {
-      console.error("Failed to send verification email:", emailError);
+      logger.error(
+        "register",
+        `Failed to send verification email to: ${email}`,
+        emailError
+      );
     }
     const userResponse = {
       id: savedUser._id,
@@ -70,6 +82,10 @@ export async function POST(request: NextRequest) {
       usage: savedUser.usage,
     };
 
+    logger.info(
+      "register",
+      `Registration completed successfully for: ${email}`
+    );
     return SuccessResponse(
       {
         message:
@@ -79,17 +95,22 @@ export async function POST(request: NextRequest) {
       201
     );
   } catch (error) {
-    console.error("Registration error:", error);
-
-    if (error instanceof ZodError)
+    if (error instanceof ZodError) {
+      logger.warn("register", `Validation error: ${error.issues[0].message}`);
       return ErrorResponse(error.issues[0].message, 400);
+    }
 
-    if (error instanceof Error && error.name === "ValidationError")
+    if (error instanceof Error && error.name === "ValidationError") {
+      logger.warn("register", "Invalid user data provided");
       return ErrorResponse("Invalid user data provided", 400);
+    }
 
-    if (error instanceof Error && "code" in error && error.code === 11000)
+    if (error instanceof Error && "code" in error && error.code === 11000) {
+      logger.warn("register", "Duplicate email registration attempt");
       return ErrorResponse("User with this email already exists", 409);
+    }
 
+    logger.error("register", "Registration failed", error);
     return ErrorResponse("Internal server error", 500);
   }
 }
