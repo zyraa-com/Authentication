@@ -27,7 +27,6 @@ export default function LoginPage() {
         setMessage(`Error: ${result.error}`);
         setLoading(false);
       }
-      // If successful, NextAuth will redirect automatically
     } catch (error) {
       setMessage("Login failed");
       setLoading(false);
@@ -37,7 +36,7 @@ export default function LoginPage() {
   const handleOAuthLogin = async (provider: "google" | "github") => {
     setMessage("");
     try {
-      await signIn(provider); // Let NextAuth handle the redirect to /auth/redirect
+      await signIn(provider);
     } catch (error) {
       console.error("OAuth error:", error);
       setMessage(`${provider} login failed`);

@@ -188,7 +188,7 @@ export const authOptions: NextAuthOptions = {
             token.usage = dbUser.usage;
           }
         } catch (error) {
-          console.error("JWT callback error:", error);
+          logger.error("jwt", "JWT callback error", error);
         }
       }
 

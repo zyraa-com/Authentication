@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { logger } from "./logger";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -46,13 +47,17 @@ export async function sendVerificationEmail(
     });
 
     if (error) {
-      console.error("Resend error:", error);
+      logger.error(
+        "sendVerificationEmail",
+        "Failed to send verification email",
+        error
+      );
       throw new Error("Failed to send verification email");
     }
 
     return data;
   } catch (error) {
-    console.error("Email sending error:", error);
+    logger.error("sendVerificationEmail", "Email sending error", error);
     throw error;
   }
 }

@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { logger } from "./logger";
 
 export interface JWTPayload {
   sub: string; // user id
@@ -57,7 +58,7 @@ export function verifyJWT(token: string): JWTPayload | null {
 
     return jwt.verify(token, secret) as JWTPayload;
   } catch (error) {
-    console.error("JWT verification failed:", error);
+    logger.error("verifyJWT", "JWT verification failed", error);
     return null;
   }
 }

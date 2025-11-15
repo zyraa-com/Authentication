@@ -190,7 +190,11 @@ export async function GET(
       try {
         await sendVerificationEmail(user.email, user.name, newToken);
       } catch (emailError) {
-        console.error("Failed to send new verification email:", emailError);
+        logger.error(
+          "verify-email",
+          "Failed to send new verification email",
+          emailError
+        );
         message =
           "Verification token has expired. Please request a new verification email.";
         bgColor = "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)";
@@ -249,7 +253,7 @@ export async function GET(
       { headers: { "Content-Type": "text/html" } }
     );
   } catch (error) {
-    console.error("Verification error:", error);
+    logger.error("verify-email", "Verification error", error);
     return new Response(
       `<!DOCTYPE html>
 <html>
