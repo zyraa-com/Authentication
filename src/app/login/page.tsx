@@ -1,9 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 
-export default function LoginPage() {
+function LoginForm() {
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/auth/redirect";
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -20,6 +24,7 @@ export default function LoginPage() {
       const result = await signIn("credentials", {
         email: formData.email,
         password: formData.password,
+        callbackUrl,
         redirect: true,
       });
 
@@ -36,7 +41,7 @@ export default function LoginPage() {
   const handleOAuthLogin = async (provider: "google" | "github") => {
     setMessage("");
     try {
-      await signIn(provider);
+      await signIn(provider, { callbackUrl });
     } catch (error) {
       console.error("OAuth error:", error);
       setMessage(`${provider} login failed`);
@@ -145,7 +150,10 @@ export default function LoginPage() {
       )}
 
       <div style={{ marginTop: "20px" }}>
-        <a href="/register" style={{ color: "#007bff", marginRight: "20px" }}>
+        <a
+          href={`/register?callbackUrl=${encodeURIComponent(callbackUrl)}`}
+          style={{ color: "#007bff", marginRight: "20px" }}
+        >
           Don't have an account? Register
         </a>
         <a href="/resend-verification" style={{ color: "#007bff" }}>
@@ -153,5 +161,13 @@ export default function LoginPage() {
         </a>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginForm />
+    </Suspense>
   );
 }

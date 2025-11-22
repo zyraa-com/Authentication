@@ -1,8 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 
-export default function RegisterPage() {
+function RegisterForm() {
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "";
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -115,10 +119,21 @@ export default function RegisterPage() {
       )}
 
       <div style={{ marginTop: "20px" }}>
-        <a href="/login" style={{ color: "#007bff" }}>
+        <a
+          href={`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`}
+          style={{ color: "#007bff" }}
+        >
           Already have an account? Login
         </a>
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <RegisterForm />
+    </Suspense>
   );
 }
