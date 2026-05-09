@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useLogin } from "@/hooks/useLogin";
 import { AuthDivider } from "./auth-divider";
@@ -34,9 +35,9 @@ export function LoginForm({ callbackUrl }: LoginFormProps) {
           label="Password"
           error={errors.password?.message}
           right={
-            <a href="#" className="text-[12px] text-brand hover:text-brand-l transition-colors">
+            <Link href="/forgot-password" className="text-[12px] text-brand hover:text-brand-l transition-colors">
               Forgot password?
-            </a>
+            </Link>
           }
           inputProps={{ ...register("password"), type: "password", placeholder: "••••••••" }}
         />

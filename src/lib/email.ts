@@ -2,11 +2,12 @@ import { render } from "@react-email/components";
 import { Resend } from "resend";
 import { VerifyEmail } from "@/emails/verify-email";
 import { WelcomeEmail } from "@/emails/welcome";
+import { ResetPasswordEmail } from "@/emails/reset-password";
+import { APP_URL } from "./env";
 import { logger } from "./logger";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM = process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev";
-const APP_URL = process.env.NEXTAUTH_URL ?? "http://localhost:3001";
 
 async function sendEmail(to: string, subject: string, react: React.ReactElement) {
   const html = await render(react);
@@ -32,5 +33,14 @@ export async function sendWelcomeEmail(email: string, name: string) {
     email,
     `Welcome to Zyraa, ${name}.`,
     WelcomeEmail({ name, dashboardUrl }),
+  );
+}
+
+export async function sendResetPasswordEmail(email: string, token: string) {
+  const resetUrl = `${APP_URL}/reset-password/${token}`;
+  await sendEmail(
+    email,
+    "Reset your Zyraa password",
+    ResetPasswordEmail({ name: email, resetUrl }),
   );
 }
