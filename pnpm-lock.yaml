@@ -102,6 +102,9 @@ importers:
       '@types/react-dom':
         specifier: ^19
         version: 19.2.2(@types/react@19.2.2)
+      baseline-browser-mapping:
+        specifier: ^2.10.28
+        version: 2.10.28
       tailwindcss:
         specifier: ^4
         version: 4.1.16
