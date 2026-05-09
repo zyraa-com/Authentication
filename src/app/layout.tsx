@@ -1,15 +1,11 @@
 import type { Metadata } from "next";
-import { DM_Sans, JetBrains_Mono } from "next/font/google";
+import { JetBrains_Mono, Geist } from "next/font/google";
 import { cookies } from "next/headers";
 import "./globals.css";
 import { Providers } from "@/components/providers";
-import { ThemeSync } from "@/components/theme-sync";
+import { cn } from "@/lib/utils";
 
-const dmSans = DM_Sans({
-  variable: "--font-sans",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
-});
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-mono",
@@ -33,11 +29,17 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      className={`${dmSans.variable} ${jetbrainsMono.variable} h-full antialiased${theme === "light" ? "" : " dark"}`}
+      className={cn(
+        "h-full",
+        "antialiased",
+        jetbrainsMono.variable,
+        theme === "light" ? "" : " dark",
+        "font-sans",
+        geist.variable,
+      )}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
-        <ThemeSync />
         <Providers>{children}</Providers>
       </body>
     </html>

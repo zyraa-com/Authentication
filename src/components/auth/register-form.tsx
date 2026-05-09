@@ -1,138 +1,55 @@
 "use client";
 
-import Link from "next/link";
-import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { useRegister } from "@/hooks/useRegister";
 import { AuthDivider } from "./auth-divider";
-import { AuthLogo } from "./auth-logo";
 import { OAuthButtons } from "./oauth-buttons";
+import { AuthHeader } from "./form/auth-header";
+import { AuthSwitcher } from "./form/auth-switcher";
+import { FormField } from "./form/form-field";
+import { FormMessage } from "./form/form-message";
 
 interface RegisterFormProps {
   callbackUrl: string;
 }
 
 export function RegisterForm({ callbackUrl }: RegisterFormProps) {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
-  const [message, setMessage] = useState("");
-  const [isError, setIsError] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage("");
-    try {
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setIsError(false);
-        setMessage(data.data.message ?? "Account created! Check your email.");
-        setFormData({ name: "", email: "", password: "" });
-      } else {
-        setIsError(true);
-        setMessage(data.error ?? "Registration failed.");
-      }
-    } catch {
-      setIsError(true);
-      setMessage("Network error. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { form, onSubmit, successMessage } = useRegister();
+  const { register, formState: { errors, isSubmitting } } = form;
 
   return (
     <div className="flex flex-col gap-6 w-full max-w-sm">
-      <div className="flex flex-col gap-1.5">
-        <AuthLogo size="lg" />
-        <h2 className="mt-5 text-[1.6rem] font-bold tracking-tight text-foreground">
-          Create account
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Start building in under a minute
-        </p>
-      </div>
+      <AuthHeader title="Create account" sub="Start building in under a minute" />
 
       <OAuthButtons callbackUrl={callbackUrl} />
       <AuthDivider />
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <div className="flex flex-col gap-1.5">
-          <label className="text-[13px] font-medium text-foreground">
-            Name
-          </label>
-          <input
-            type="text"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            required
-            placeholder="Your name"
-            className="h-10 rounded-lg border border-border bg-input px-3.5 text-[13.5px] text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring/50 transition-shadow"
-          />
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <label className="text-[13px] font-medium text-foreground">
-            Email
-          </label>
-          <input
-            type="email"
-            value={formData.email}
-            onChange={(e) =>
-              setFormData({ ...formData, email: e.target.value })
-            }
-            required
-            placeholder="you@example.com"
-            className="h-10 rounded-lg border border-border bg-input px-3.5 text-[13.5px] text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring/50 transition-shadow"
-          />
-        </div>
-        <div className="flex flex-col gap-1.5">
-          <label className="text-[13px] font-medium text-foreground">
-            Password
-          </label>
-          <input
-            type="password"
-            value={formData.password}
-            onChange={(e) =>
-              setFormData({ ...formData, password: e.target.value })
-            }
-            required
-            placeholder="••••••••"
-            className="h-10 rounded-lg border border-border bg-input px-3.5 text-[13.5px] text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring/50 transition-shadow"
-          />
-        </div>
+      <form onSubmit={onSubmit} className="flex flex-col gap-4">
+        <FormField
+          label="Name"
+          error={errors.name?.message}
+          inputProps={{ ...register("name"), type: "text", placeholder: "Your name" }}
+        />
+        <FormField
+          label="Email"
+          error={errors.email?.message}
+          inputProps={{ ...register("email"), type: "email", placeholder: "you@example.com" }}
+        />
+        <FormField
+          label="Password"
+          error={errors.password?.message}
+          inputProps={{ ...register("password"), type: "password", placeholder: "••••••••" }}
+        />
 
-        {message && (
-          <p
-            className={`text-[12.5px] rounded-lg px-3 py-2 border ${isError ? "text-destructive bg-destructive/8 border-destructive/20" : "text-success-l bg-success-l/8 border-success-l/20"}`}
-          >
-            {message}
-          </p>
-        )}
+        {errors.root && <FormMessage message={errors.root.message!} isError />}
+        {successMessage && <FormMessage message={successMessage} isError={false} />}
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="h-10 rounded-lg font-semibold text-[14px] text-white bg-[linear-gradient(135deg,var(--brand-d),var(--brand-l))] shadow-[0_0_20px_var(--brand-glow)] hover:shadow-[0_0_32px_var(--brand-glow)] hover:-translate-y-px transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-        >
-          {loading ? "Creating account…" : "Create account"}
-        </button>
+        <Button type="submit" variant="brand" size="xl" className="w-full" disabled={isSubmitting}>
+          {isSubmitting ? "Creating account…" : "Create account"}
+        </Button>
       </form>
 
-      <p className="text-center text-[13px] text-muted-foreground">
-        Already have an account?{" "}
-        <Link
-          href="/login"
-          className="text-brand hover:text-brand-l font-medium transition-colors"
-        >
-          Sign in
-        </Link>
-      </p>
+      <AuthSwitcher prompt="Already have an account?" label="Sign in" href="/login" />
     </div>
   );
 }
