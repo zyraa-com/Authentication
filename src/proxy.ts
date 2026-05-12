@@ -9,9 +9,9 @@ export async function proxy(request: NextRequest) {
   });
 
   const { pathname, searchParams } = request.nextUrl;
-  const appUrl = process.env.APP_URL || "http://localhost:3001";
+  const appUrl = process.env.APP_URL || "http://localhost:3002";
 
-  const authPages = ["/login", "/register", "/resend-verification"];
+  const authPages = ["/login", "/register", "/resend-verification", "/forgot-password", "/verify"];
   const isAuthPage = authPages.some((page) => pathname.startsWith(page));
 
   if (token && isAuthPage) {
@@ -28,5 +28,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/login", "/register", "/resend-verification", "/dashboard"],
+  matcher: ["/login", "/register", "/resend-verification", "/forgot-password", "/verify/:path*", "/dashboard"],
 };

@@ -70,6 +70,19 @@ export const authOptions: NextAuthOptions = {
     maxAge: 30 * 24 * 60 * 60,
   },
 
+  cookies: {
+    sessionToken: {
+      name: "next-auth.session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax" as const,
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+        domain: process.env.NEXTAUTH_COOKIE_DOMAIN || undefined,
+      },
+    },
+  },
+
   callbacks: {
     async signIn({ user, account, profile }) {
       if (!account) return false;
