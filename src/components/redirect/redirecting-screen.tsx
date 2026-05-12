@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { useEffect, useState } from "react";
 import { RedirectBg } from "@/components/redirect/redirect-bg";
 import { RedirectDots } from "@/components/redirect/redirect-dots";
 import { RedirectLogo } from "@/components/redirect/redirect-logo";
@@ -13,9 +14,19 @@ interface RedirectingScreenProps {
 
 export function RedirectingScreen({ url, name }: RedirectingScreenProps) {
   const firstName = name.split(" ")[0];
+  const [fading, setFading] = useState(false);
 
   useEffect(() => {
-    window.location.href = url;
+    // Let the animation breathe, then fade out and navigate
+    const fadeTimer = setTimeout(() => setFading(true), 2000);
+    const navTimer = setTimeout(() => {
+      window.location.href = url;
+    }, 2400);
+
+    return () => {
+      clearTimeout(fadeTimer);
+      clearTimeout(navTimer);
+    };
   }, [url]);
 
   return (
@@ -27,7 +38,19 @@ export function RedirectingScreen({ url, name }: RedirectingScreenProps) {
         <RedirectDots firstName={firstName} />
       </div>
 
-      <RedirectProgress />
+      <RedirectProgress navigating={fading} />
+
+      {/* Full-screen fade-out overlay that masks the cross-origin navigation */}
+      <AnimatePresence>
+        {fading && (
+          <motion.div
+            className="fixed inset-0 z-50 bg-background"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.35, ease: "easeIn" }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
