@@ -11,18 +11,12 @@ export function RedirectLogo() {
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
     >
       <span
-        className="font-extrabold tracking-tight leading-none"
-        style={{
-          fontSize: "52px",
-          color: "#F0922A",
-          textShadow: "0 0 48px rgba(240,146,42,0.45)",
-        }}
+        className="font-extrabold tracking-tight leading-none text-[#F0922A] text-[52px] [text-shadow:0_0_48px_rgba(240,146,42,0.45)]"
       >
         Z
       </span>
       <span
-        className="font-extrabold tracking-tight leading-none text-foreground"
-        style={{ fontSize: "52px" }}
+        className="font-extrabold tracking-tight leading-none text-foreground text-[52px]"
       >
         yraa
       </span>
