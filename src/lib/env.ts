@@ -3,7 +3,6 @@ export const HOME_URL =
   process.env.NEXT_PUBLIC_HOME_URL ?? "http://localhost:3000";
 
 // ── Server-side service URLs ──────────────────────────────────────────────────
-
 export const APP_URL = process.env.NEXTAUTH_URL ?? "http://localhost:3001";
 
 // Zyraa dashboard app URL
