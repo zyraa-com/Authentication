@@ -3,9 +3,10 @@ import { logger } from "./logger";
 import { JWT_SECRET } from "./env";
 
 export interface JWTPayload {
-  sub: string; // user id
+  sub: string;
   email: string;
   name: string;
+  image?: string;
   emailVerified: boolean;
   isPremium: boolean;
   plan: string;
@@ -21,6 +22,7 @@ export function generateJWT(userData: {
   id: string;
   email: string;
   name: string;
+  image?: string;
   emailVerified: boolean;
   isPremium: boolean;
   plan: string;
@@ -34,12 +36,13 @@ export function generateJWT(userData: {
     sub: userData.id,
     email: userData.email,
     name: userData.name,
+    image: userData.image,
     emailVerified: userData.emailVerified,
     isPremium: userData.isPremium,
     plan: userData.plan,
     trialUsed: userData.trialUsed,
     usage: userData.usage,
-    exp: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60, // 30 days
+    exp: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60,
   };
 
   if (!JWT_SECRET)

@@ -17,6 +17,7 @@ export async function getAuthCallbackUrl(): Promise<{ url: string; name: string 
     id: session.user.id,
     email: session.user.email!,
     name: session.user.name!,
+    image: session.user.image ?? undefined,
     emailVerified: session.user.emailVerified,
     isPremium: session.user.isPremium,
     plan: session.user.plan,
