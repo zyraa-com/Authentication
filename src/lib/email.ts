@@ -9,7 +9,11 @@ import { logger } from "./logger";
 const resend = new Resend(RESEND_API_KEY);
 const FROM = RESEND_FROM_EMAIL;
 
-async function sendEmail(to: string, subject: string, react: React.ReactElement) {
+async function sendEmail(
+  to: string,
+  subject: string,
+  react: React.ReactElement,
+) {
   const html = await render(react);
   const { error } = await resend.emails.send({ from: FROM, to, subject, html });
   if (error) {
@@ -18,11 +22,15 @@ async function sendEmail(to: string, subject: string, react: React.ReactElement)
   }
 }
 
-export async function sendVerificationEmail(email: string, name: string, token: string) {
+export async function sendVerificationEmail(
+  email: string,
+  name: string,
+  token: string,
+) {
   const verificationUrl = `${APP_URL}/verify/${token}`;
   await sendEmail(
     email,
-    "Verify your email address — Zyraa",
+    "Verify your email address - Zyraa",
     VerifyEmail({ name, verificationUrl }),
   );
 }

@@ -9,7 +9,7 @@ interface VerifyEmailProps {
 
 VerifyEmail.PreviewProps = {
   name: "John Doe",
-  verificationUrl: "https://app.zyraa.com/verify/demo-token-preview",
+  verificationUrl: "https://auth.zyraa.live/verify/demo-token-preview",
 } satisfies VerifyEmailProps;
 
 export function VerifyEmail({ name, verificationUrl }: VerifyEmailProps) {
@@ -17,8 +17,8 @@ export function VerifyEmail({ name, verificationUrl }: VerifyEmailProps) {
     <EmailLayout preview="Verify your Zyraa email address">
       <Text style={t.title}>Verify your email.</Text>
       <Text style={t.body}>
-        Click below to verify{" "}
-        <strong style={t.strong}>{name}</strong> and activate your account.
+        Click below to verify <strong style={t.strong}>{name}</strong> and
+        activate your account.
       </Text>
 
       <EmailButton href={verificationUrl}>Verify email address</EmailButton>

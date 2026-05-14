@@ -9,7 +9,7 @@ interface ResetPasswordEmailProps {
 
 ResetPasswordEmail.PreviewProps = {
   name: "test@zyraa.dev",
-  resetUrl: "https://app.zyraa.com/reset/demo-token-preview",
+  resetUrl: "https://auth.zyraa.live/reset/demo-token-preview",
 } satisfies ResetPasswordEmailProps;
 
 export function ResetPasswordEmail({
