@@ -12,6 +12,11 @@ export async function GET(request: NextRequest) {
   const callbackUrl =
     request.nextUrl.searchParams.get("callbackUrl") ?? "http://localhost:3000";
 
+  const incoming = request.cookies.getAll();
+  console.log("[session-clear] HIT → callbackUrl:", callbackUrl);
+  console.log("[session-clear] NEXTAUTH_COOKIE_DOMAIN =", NEXTAUTH_COOKIE_DOMAIN || "(none)");
+  console.log("[session-clear] Incoming cookies:", incoming.map((c) => c.name));
+
   const response = NextResponse.redirect(callbackUrl);
 
   const cookieBase = {
@@ -20,7 +25,11 @@ export async function GET(request: NextRequest) {
     ...(NEXTAUTH_COOKIE_DOMAIN ? { domain: NEXTAUTH_COOKIE_DOMAIN } : {}),
   };
 
+  console.log("[session-clear] Clearing with:", JSON.stringify(cookieBase));
+
   for (const name of NEXTAUTH_COOKIES) {
+    const had = request.cookies.has(name);
+    console.log(`[session-clear] Clearing "${name}" (was present: ${had})`);
     response.cookies.set(name, "", cookieBase);
   }
 
