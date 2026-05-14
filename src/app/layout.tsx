@@ -33,12 +33,19 @@ export default async function RootLayout({
         "h-full",
         "antialiased",
         jetbrainsMono.variable,
-        theme === "light" ? "" : " dark",
+        theme === "light" ? "" : "dark",
         "font-sans",
         geist.variable,
       )}
       suppressHydrationWarning
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=document.cookie.split('; ').find(function(r){return r.startsWith('zyraa-theme=')});var v=t?t.split('=')[1]:'dark';document.documentElement.classList.toggle('dark',v!=='light')}catch(e){}})()`,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col">
         <Providers>{children}</Providers>
       </body>

@@ -1,29 +1,20 @@
 "use client";
 
 import { useEffect } from "react";
+import { type Theme, applyTheme, readTheme } from "@/lib/theme";
 
-function readCookie(name: string) {
-  return document.cookie
-    .split("; ")
-    .find((r) => r.startsWith(`${name}=`))
-    ?.split("=")[1];
-}
+const CHANNEL = "zyraa-theme";
 
 export function useThemeSync() {
   useEffect(() => {
-    const apply = () => {
-      const theme = readCookie("zyraa-theme") ?? "dark";
-      const html = document.documentElement;
-      if (theme === "light") {
-        html.classList.remove("dark");
-      } else {
-        html.classList.add("dark");
-      }
-    };
+    applyTheme(readTheme());
 
-    apply();
+    let channel: BroadcastChannel | null = null;
+    try {
+      channel = new BroadcastChannel(CHANNEL);
+      channel.onmessage = (e: MessageEvent<Theme>) => applyTheme(e.data);
+    } catch (_) {}
 
-    const id = setInterval(apply, 2000);
-    return () => clearInterval(id);
+    return () => channel?.close();
   }, []);
 }

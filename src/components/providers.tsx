@@ -10,13 +10,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <SessionProvider>
       {children}
       <Toaster
-        theme="dark"
         position="bottom-right"
         toastOptions={{
           style: {
-            background: "#131318",
-            border: "1px solid #1E1E25",
-            color: "#F2F0EC",
+            background: "var(--card)",
+            border: "1px solid var(--border-mid)",
+            color: "var(--foreground)",
             fontFamily: "var(--font-sans)",
             fontSize: "13.5px",
           },
