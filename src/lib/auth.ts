@@ -8,16 +8,26 @@ import { Plan, Provider } from "@/lib/types";
 import UserModel from "@/modals/User";
 import mongoose from "mongoose";
 import { logger } from "@/lib/logger";
+import {
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
+  GITHUB_CLIENT_ID,
+  GITHUB_CLIENT_SECRET,
+  NEXTAUTH_SECRET,
+  NEXTAUTH_COOKIE_DOMAIN,
+  IS_PRODUCTION,
+  IS_DEVELOPMENT,
+} from "@/lib/env";
 
 export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      clientId: GOOGLE_CLIENT_ID,
+      clientSecret: GOOGLE_CLIENT_SECRET,
     }),
     GitHubProvider({
-      clientId: process.env.GITHUB_CLIENT_ID!,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+      clientId: GITHUB_CLIENT_ID,
+      clientSecret: GITHUB_CLIENT_SECRET,
     }),
     CredentialsProvider({
       name: "credentials",
@@ -77,8 +87,8 @@ export const authOptions: NextAuthOptions = {
         httpOnly: true,
         sameSite: "lax" as const,
         path: "/",
-        secure: process.env.NODE_ENV === "production",
-        domain: process.env.NEXTAUTH_COOKIE_DOMAIN || undefined,
+        secure: IS_PRODUCTION,
+        domain: NEXTAUTH_COOKIE_DOMAIN,
       },
     },
   },
@@ -236,6 +246,6 @@ export const authOptions: NextAuthOptions = {
     error: "/auth/error",
   },
 
-  secret: process.env.NEXTAUTH_SECRET,
-  debug: process.env.NODE_ENV === "development",
+  secret: NEXTAUTH_SECRET,
+  debug: IS_DEVELOPMENT,
 };

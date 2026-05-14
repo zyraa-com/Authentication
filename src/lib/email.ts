@@ -3,11 +3,11 @@ import { Resend } from "resend";
 import { VerifyEmail } from "@/emails/verify-email";
 import { WelcomeEmail } from "@/emails/welcome";
 import { ResetPasswordEmail } from "@/emails/reset-password";
-import { APP_URL } from "./env";
+import { APP_URL, RESEND_API_KEY, RESEND_FROM_EMAIL } from "./env";
 import { logger } from "./logger";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM = process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev";
+const resend = new Resend(RESEND_API_KEY);
+const FROM = RESEND_FROM_EMAIL;
 
 async function sendEmail(to: string, subject: string, react: React.ReactElement) {
   const html = await render(react);

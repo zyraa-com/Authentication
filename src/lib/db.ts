@@ -1,9 +1,8 @@
 import mongoose from "mongoose";
-
-const MONGODB_URI = process.env.MONGODB_URI!;
+import { MONGODB_URI } from "./env";
 
 if (!MONGODB_URI) {
-  throw new Error("Please define mongo_uri in env variables");
+  throw new Error("MONGODB_URI is not defined in environment variables");
 }
 
 declare global {

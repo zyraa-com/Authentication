@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import { logger } from "./logger";
+import { JWT_SECRET } from "./env";
 
 export interface JWTPayload {
   sub: string; // user id
@@ -41,22 +42,18 @@ export function generateJWT(userData: {
     exp: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60, // 30 days
   };
 
-  const secret = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET;
-  if (!secret) {
+  if (!JWT_SECRET)
     throw new Error("JWT_SECRET or NEXTAUTH_SECRET must be defined");
-  }
 
-  return jwt.sign(payload, secret);
+  return jwt.sign(payload, JWT_SECRET);
 }
 
 export function verifyJWT(token: string): JWTPayload | null {
   try {
-    const secret = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET;
-    if (!secret) {
+    if (!JWT_SECRET)
       throw new Error("JWT_SECRET or NEXTAUTH_SECRET must be defined");
-    }
 
-    return jwt.verify(token, secret) as JWTPayload;
+    return jwt.verify(token, JWT_SECRET) as JWTPayload;
   } catch (error) {
     logger.error("verifyJWT", "JWT verification failed", error);
     return null;
