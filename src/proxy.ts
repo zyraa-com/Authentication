@@ -1,12 +1,15 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
-import { NEXTAUTH_SECRET, ZYRAA_APP_URL } from "@/lib/env";
+import { NEXTAUTH_SECRET, ZYRAA_APP_URL, IS_PRODUCTION } from "@/lib/env";
 
 export async function proxy(request: NextRequest) {
   const token = await getToken({
     req: request,
     secret: NEXTAUTH_SECRET,
+    cookieName: IS_PRODUCTION
+      ? "__Secure-next-auth.session-token"
+      : "next-auth.session-token",
   });
 
   const { pathname, searchParams } = request.nextUrl;

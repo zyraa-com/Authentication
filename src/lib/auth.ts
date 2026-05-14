@@ -82,13 +82,15 @@ export const authOptions: NextAuthOptions = {
 
   cookies: {
     sessionToken: {
-      name: "next-auth.session-token",
+      name: IS_PRODUCTION
+        ? "__Secure-next-auth.session-token"
+        : "next-auth.session-token",
       options: {
         httpOnly: true,
         sameSite: "lax" as const,
         path: "/",
         secure: IS_PRODUCTION,
-        domain: NEXTAUTH_COOKIE_DOMAIN,
+        domain: NEXTAUTH_COOKIE_DOMAIN || undefined,
       },
     },
   },
