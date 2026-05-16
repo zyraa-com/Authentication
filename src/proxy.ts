@@ -8,14 +8,22 @@ const aj = arcjet({
   key: process.env.ARCJET_KEY!,
   rules: [
     shield({ mode: "LIVE" }),
-    detectBot({ mode: "LIVE", allow: ["CATEGORY:SEARCH_ENGINE", "CATEGORY:MONITOR"] }),
+    detectBot({
+      mode: "LIVE",
+      allow: ["CATEGORY:SEARCH_ENGINE", "CATEGORY:MONITOR"],
+    }),
   ],
 });
 
 export async function proxy(request: NextRequest) {
-  const decision = await aj.protect(request);
-  if (decision.isDenied()) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  const isLocalhost =
+    request.nextUrl.hostname === "localhost" ||
+    request.nextUrl.hostname === "127.0.0.1";
+  if (!isLocalhost && process.env.NODE_ENV !== "development") {
+    const decision = await aj.protect(request);
+    if (decision.isDenied()) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
   }
 
   const token = await getToken({
@@ -29,7 +37,13 @@ export async function proxy(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl;
   const appUrl = ZYRAA_APP_URL;
 
-  const authPages = ["/login", "/register", "/resend-verification", "/forgot-password", "/verify"];
+  const authPages = [
+    "/login",
+    "/register",
+    "/resend-verification",
+    "/forgot-password",
+    "/verify",
+  ];
   const isAuthPage = authPages.some((page) => pathname.startsWith(page));
 
   if (token && isAuthPage) {
@@ -46,5 +60,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|public/).*)" ],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|public/).*)"],
 };
