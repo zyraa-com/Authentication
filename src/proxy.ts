@@ -46,5 +46,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/login", "/register", "/resend-verification", "/forgot-password", "/verify/:path*", "/dashboard"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|public/).*)" ],
 };
