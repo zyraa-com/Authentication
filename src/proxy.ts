@@ -1,9 +1,23 @@
+import arcjet, { detectBot, shield } from "@arcjet/next";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 import { NEXTAUTH_SECRET, ZYRAA_APP_URL, IS_PRODUCTION } from "@/lib/env";
 
+const aj = arcjet({
+  key: process.env.ARCJET_KEY!,
+  rules: [
+    shield({ mode: "LIVE" }),
+    detectBot({ mode: "LIVE", allow: ["CATEGORY:SEARCH_ENGINE", "CATEGORY:MONITOR"] }),
+  ],
+});
+
 export async function proxy(request: NextRequest) {
+  const decision = await aj.protect(request);
+  if (decision.isDenied()) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   const token = await getToken({
     req: request,
     secret: NEXTAUTH_SECRET,
