@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { connectToDatabase } from "@/lib/db";
 import { SuccessResponse, ErrorResponse } from "@/lib/apiResponse";
-import UserModel from "@/modals/User";
+import { UserModel } from "@zyraalabs/zyraa-db";
 import { z } from "zod";
 import {
   generateVerificationToken,
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     await user.save();
 
     try {
-      await sendVerificationEmail(email, user.name, verificationToken);
+      await sendVerificationEmail(email, user.name ?? "", verificationToken);
       logger.info(
         "resend-verification",
         `Verification email sent successfully to: ${email}`

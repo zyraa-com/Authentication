@@ -4,7 +4,7 @@ import { ErrorResponse, SuccessResponse } from "@/lib/apiResponse";
 import { logger } from "@/lib/logger";
 import { generateVerificationToken, getVerificationTokenExpiry } from "@/lib/tokens";
 import { sendVerificationEmail } from "@/lib/email";
-import UserModel from "@/modals/User";
+import { UserModel } from "@zyraalabs/zyraa-db";
 
 export async function POST(
   _req: NextRequest,
@@ -36,7 +36,7 @@ export async function POST(
       await user.save();
 
       try {
-        await sendVerificationEmail(user.email, user.name, newToken);
+        await sendVerificationEmail(user.email, user.name ?? "", newToken);
         logger.info("verify-email", `New verification email sent to: ${user.email}`);
         return ErrorResponse("Token expired. A new verification email has been sent.", 400);
       } catch {

@@ -2,9 +2,8 @@ import { NextRequest } from "next/server";
 import bcrypt from "bcryptjs";
 import { connectToDatabase } from "@/lib/db";
 import { SuccessResponse, ErrorResponse } from "@/lib/apiResponse";
-import { Plan, Provider } from "@/lib/types";
+import { Plan, Provider, UserModel } from "@zyraalabs/zyraa-db";
 import { registerSchema, RegisterInput } from "@/lib/validations";
-import UserModel from "@/modals/User";
 import { ZodError } from "zod";
 import {
   generateVerificationToken,

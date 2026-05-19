@@ -4,7 +4,7 @@ import { connectToDatabase } from "@/lib/db";
 import { generateVerificationToken, getVerificationTokenExpiry } from "@/lib/tokens";
 import { sendVerificationEmail } from "@/lib/email";
 import { logger } from "@/lib/logger";
-import UserModel from "@/modals/User";
+import { UserModel } from "@zyraalabs/zyraa-db";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -29,7 +29,7 @@ async function verifyToken(token: string): Promise<VerifyStatus> {
       await user.save();
 
       try {
-        await sendVerificationEmail(user.email, user.name, newToken);
+        await sendVerificationEmail(user.email, user.name ?? "", newToken);
         logger.info("verify-page", `New verification email sent to: ${user.email}`);
       } catch {
         logger.error("verify-page", `Failed to resend to: ${user.email}`);

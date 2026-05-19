@@ -5,7 +5,7 @@ import { forgotPasswordSchema, type ForgotPasswordInput } from "@/lib/validation
 import { generateResetToken, getResetTokenExpiry } from "@/lib/tokens";
 import { sendResetPasswordEmail } from "@/lib/email";
 import { logger } from "@/lib/logger";
-import UserModel from "@/modals/User";
+import { UserModel } from "@zyraalabs/zyraa-db";
 import { ZodError } from "zod";
 
 export async function POST(request: NextRequest) {

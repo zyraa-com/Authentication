@@ -4,8 +4,7 @@ import GitHubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { connectToDatabase } from "@/lib/db";
-import { Plan, Provider } from "@/lib/types";
-import UserModel from "@/modals/User";
+import { Plan, Provider, UserModel } from "@zyraalabs/zyraa-db";
 import mongoose from "mongoose";
 import { logger } from "@/lib/logger";
 import {

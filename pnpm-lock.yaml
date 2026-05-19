@@ -23,6 +23,9 @@ importers:
       '@types/jsonwebtoken':
         specifier: ^9.0.10
         version: 9.0.10
+      '@zyraalabs/zyraa-db':
+        specifier: ^1.0.0
+        version: 1.0.0(mongoose@8.19.2)
       axios:
         specifier: ^1.16.0
         version: 1.16.0
@@ -1972,6 +1975,11 @@ packages:
 
   '@types/ws@8.18.1':
     resolution: {integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==}
+
+  '@zyraalabs/zyraa-db@1.0.0':
+    resolution: {integrity: sha512-UGIq4Wt9B0Q/Wq/xv+siHuoesEmt57+nTKyKsxnL+yJC9GcCyP4h+qn/7CR98U3xIp8lmT/+5qgzGRxlgAxqZw==, tarball: https://npm.pkg.github.com/download/@zyraalabs/zyraa-db/1.0.0/8ed42fd43e44d9ccf2b0d82035f1e79a8632395f}
+    peerDependencies:
+      mongoose: '>=8.0.0'
 
   accepts@1.3.8:
     resolution: {integrity: sha512-PYAthTa2m2VKxuvSD3DPC/Gy+U+sOA1LAuT8mkmRuvw+NACSaeXEQ+NHcVF7rONl6qcaxV3Uuemwawk+7+SJLw==}
@@ -5613,6 +5621,10 @@ snapshots:
   '@types/ws@8.18.1':
     dependencies:
       '@types/node': 20.19.24
+
+  '@zyraalabs/zyraa-db@1.0.0(mongoose@8.19.2)':
+    dependencies:
+      mongoose: 8.19.2
 
   accepts@1.3.8:
     dependencies:
