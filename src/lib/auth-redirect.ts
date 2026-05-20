@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "./auth";
-import { generateJWT } from "./jwt";
+import { createExchangeCode } from "./exchange-code";
 import { logger } from "./logger";
 import { ZYRAA_APP_URL } from "./env";
 
@@ -13,18 +13,12 @@ export async function getAuthCallbackUrl(): Promise<{ url: string; name: string 
     redirect("/login");
   }
 
-  const jwtToken = await generateJWT({
-    id: session.user.id,
-    email: session.user.email!,
-    name: session.user.name!,
-    image: session.user.image ?? undefined,
-    emailVerified: session.user.emailVerified,
-  });
+  const code = await createExchangeCode(session.user.id);
 
-  logger.info("auth-redirect", `JWT generated, redirecting: ${session.user.email}`);
+  logger.info("auth-redirect", `Exchange code created, redirecting: ${session.user.email}`);
 
   return {
-    url: `${ZYRAA_APP_URL}/api/auth/callback?token=${jwtToken}`,
+    url: `${ZYRAA_APP_URL}/api/auth/callback?code=${code}`,
     name: session.user.name!,
   };
 }

@@ -32,6 +32,12 @@ export const RESEND_API_KEY = process.env.RESEND_API_KEY ?? "";
 export const RESEND_FROM_EMAIL =
   process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev";
 
+// ── Upstash Redis ─────────────────────────────────────────────────────────────
+export const UPSTASH_REDIS_REST_URL =
+  process.env.UPSTASH_REDIS_REST_URL ?? "";
+export const UPSTASH_REDIS_REST_TOKEN =
+  process.env.UPSTASH_REDIS_REST_TOKEN ?? "";
+
 // ── Environment flags ─────────────────────────────────────────────────────────
 export const IS_PRODUCTION = process.env.NODE_ENV === "production";
 export const IS_DEVELOPMENT = process.env.NODE_ENV === "development";
