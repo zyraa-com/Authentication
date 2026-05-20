@@ -13,7 +13,7 @@ export async function getAuthCallbackUrl(): Promise<{ url: string; name: string 
     redirect("/login");
   }
 
-  const jwtToken = generateJWT({
+  const jwtToken = await generateJWT({
     id: session.user.id,
     email: session.user.email!,
     name: session.user.name!,

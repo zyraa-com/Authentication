@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+import { SignJWT, jwtVerify } from "jose";
 import { logger } from "./logger";
 import { JWT_SECRET } from "./env";
 
@@ -11,34 +11,34 @@ export interface JWTPayload {
   exp: number;
 }
 
-export function generateJWT(userData: {
+const secret = () => new TextEncoder().encode(JWT_SECRET);
+
+export async function generateJWT(userData: {
   id: string;
   email: string;
   name: string;
   image?: string;
   emailVerified: boolean;
-}): string {
-  const payload: JWTPayload = {
-    sub: userData.id,
+}): Promise<string> {
+  if (!JWT_SECRET) throw new Error("JWT_SECRET must be defined");
+
+  return new SignJWT({
     email: userData.email,
     name: userData.name,
-    image: userData.image,
+    ...(userData.image ? { image: userData.image } : {}),
     emailVerified: userData.emailVerified,
-    exp: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60,
-  };
-
-  if (!JWT_SECRET)
-    throw new Error("JWT_SECRET or NEXTAUTH_SECRET must be defined");
-
-  return jwt.sign(payload, JWT_SECRET);
+  })
+    .setProtectedHeader({ alg: "HS256" })
+    .setSubject(userData.id)
+    .setExpirationTime("30d")
+    .sign(secret());
 }
 
-export function verifyJWT(token: string): JWTPayload | null {
+export async function verifyJWT(token: string): Promise<JWTPayload | null> {
   try {
-    if (!JWT_SECRET)
-      throw new Error("JWT_SECRET or NEXTAUTH_SECRET must be defined");
-
-    return jwt.verify(token, JWT_SECRET) as JWTPayload;
+    if (!JWT_SECRET) throw new Error("JWT_SECRET must be defined");
+    const { payload } = await jwtVerify(token, secret());
+    return payload as unknown as JWTPayload;
   } catch (error) {
     logger.error("verifyJWT", "JWT verification failed", error);
     return null;
