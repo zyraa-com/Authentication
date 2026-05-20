@@ -19,10 +19,6 @@ export async function getAuthCallbackUrl(): Promise<{ url: string; name: string 
     name: session.user.name!,
     image: session.user.image ?? undefined,
     emailVerified: session.user.emailVerified,
-    isPremium: session.user.isPremium,
-    plan: session.user.plan,
-    trialUsed: session.user.trialUsed,
-    usage: session.user.usage,
   });
 
   logger.info("auth-redirect", `JWT generated, redirecting: ${session.user.email}`);
